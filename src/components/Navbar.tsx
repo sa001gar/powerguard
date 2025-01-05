@@ -12,7 +12,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Activity className="w-8 h-8 text-blue-500" />
             <span className="ml-2 text-xl font-semibold hidden sm:inline">
-              PowerGuard AI
+              Electricity Monitoring
             </span>
             <span className="ml-2 text-xl font-semibold sm:hidden">
               E-Monitor

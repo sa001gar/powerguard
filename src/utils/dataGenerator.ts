@@ -1,13 +1,18 @@
+import { NORMAL_CURRENT, THEFT_CURRENT } from './constants';
+
+// Add small random variations to make the graph more natural
+const addNoise = (value: number, variance: number = 0.02): number => {
+  return value + (Math.random() * variance * 2 - variance);
+};
+
 export const generateNormalValue = (): number => {
-  const baseValue = 40;
-  const variance = 5;
-  return baseValue + (Math.random() * variance * 2 - variance);
+  return addNoise(NORMAL_CURRENT);
 };
 
 export const generateAnomalyValue = (): number => {
-  const baseValue = 100;
-  const variance = 20;
-  return baseValue + (Math.random() * variance * 2 - variance);
+  const baseTheftCurrent = THEFT_CURRENT.MIN + 
+    (Math.random() * (THEFT_CURRENT.MAX - THEFT_CURRENT.MIN));
+  return addNoise(baseTheftCurrent, 0.03);
 };
 
 export const generateTimeLabels = (count: number): string[] => {

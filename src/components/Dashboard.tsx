@@ -15,6 +15,7 @@ import { getChartOptions } from '../utils/chartConfig';
 import { generateNormalValue, generateAnomalyValue, generateTimeLabels } from '../utils/dataGenerator';
 import { saveAlert } from '../utils/alertStorage';
 import AlertBanner from './AlertBanner';
+import { INITIAL_DATA_POINTS, UPDATE_INTERVAL } from '../utils/constants';
 
 ChartJS.register(
   CategoryScale,
@@ -23,10 +24,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
-
-const INITIAL_DATA_POINTS = 30; // Increased for better visualization
 
 const Dashboard = () => {
   const [data, setData] = useState<number[]>([]);
@@ -62,11 +61,10 @@ const Dashboard = () => {
   useEffect(() => {
     const initialData = Array.from({ length: INITIAL_DATA_POINTS }, generateNormalValue);
     const initialLabels = generateTimeLabels(INITIAL_DATA_POINTS);
-
     setData(initialData);
     setLabels(initialLabels);
 
-    const interval = setInterval(updateChart, 1000);
+    const interval = setInterval(updateChart, UPDATE_INTERVAL);
     return () => clearInterval(interval);
   }, [isTheftDetected]);
 
@@ -79,7 +77,7 @@ const Dashboard = () => {
       const alert = {
         timestamp: new Date().toLocaleTimeString(),
         date: new Date().toLocaleDateString(),
-        value: generateAnomalyValue(),
+        value: currentValue,
       };
       saveAlert(alert);
     }
@@ -88,7 +86,6 @@ const Dashboard = () => {
   const handleRefresh = () => {
     const initialData = Array.from({ length: INITIAL_DATA_POINTS }, generateNormalValue);
     const initialLabels = generateTimeLabels(INITIAL_DATA_POINTS);
-
     setData(initialData);
     setLabels(initialLabels);
     setIsTheftDetected(false);
@@ -98,7 +95,7 @@ const Dashboard = () => {
     labels,
     datasets: [
       {
-        label: 'Electricity Consumption (kW)',
+        label: 'Current (A)',
         data: data,
         borderColor: isTheftDetected ? 'rgb(239, 68, 68)' : 'rgb(59, 130, 246)',
         backgroundColor: isTheftDetected ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
@@ -106,7 +103,6 @@ const Dashboard = () => {
         pointRadius: 0,
         fill: true,
         tension: 0.4,
-        cubicInterpolationMode: 'monotone',
       },
     ],
   };
@@ -117,9 +113,9 @@ const Dashboard = () => {
       
       <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">Live Monitoring</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800">LED Current Monitor</h2>
           <p className="text-sm text-gray-600">
-            Current: {currentValue.toFixed(2)} kW
+            Current Draw: {currentValue.toFixed(3)} A
           </p>
         </div>
         <button
@@ -127,7 +123,7 @@ const Dashboard = () => {
           className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
-          Refresh Graph
+          Reset Monitor
         </button>
       </div>
 
@@ -136,7 +132,7 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-4 text-sm text-gray-600 text-center">
-        <p>© 2024 Department of Computer Science | Mankar College</p>
+        <p>Real-time Current Monitoring System</p>
       </div>
     </div>
   );
